@@ -1,0 +1,39 @@
+
+1. You should download messages and store them in a table message.
+The first step is extracting hrefs and storing them in a table.
+Next step is a separate predicate downloading the page and storing it in
+this same table for those messages that have not been downloaded.
+
+2. Having html pages in your database, you can start parsing html.
+This html is quite well formed, so prolog is really effective in that
+area.
+
+The following parts should be extracted and stored in a table:
+pełna nazwa emitenta,
+skrócona nazwa emitenta,
+sektor,
+NIP,
+Regon,
+Data sporządzenie,
+numer komunikatu,
+Temat,
+Podstawa prawna (uwaga, będzie potrzebne do selekcji wiadomości dla Was
+do parsowania tekstu komunikatu).
+Treść raportu.
+
+3. Prepare predicate for selecting ONLY messages with
+Podstawa_prawna="Art. 160 ust 4 Ustawy o obrocie - informacja o
+transakcjach osób mających dostęp do informacji poufnych".
+
+Split Treść raportu into the following parts (I think separated with
+<BR> tags, but I am not sure).
+ 3.1 Initial lyrics
+"Zarząd xxx informuje, iż .....(aż do) zbycia/kupna yyyy akcji Emitenta
+po cenie ...".
+3.2 Informacja, czy transakcja była transakcją pakietową.
+3. Owners' structure before the transaction.
+3.4 Owners' structure after the transaction.
+
+4. Parse ONLY the first part, i. e. "Zarząd xxx informuje, iż .....(aż
+do) zbycia/kupna yyyy akcji Emitenta po cenie ...".
+
