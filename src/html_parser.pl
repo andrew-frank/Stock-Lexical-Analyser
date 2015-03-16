@@ -11,8 +11,8 @@
 % podstawa prawna
 % tresc raportu
 
-% temp export
-:- module(html_parser, [parse_sample/12, parse_report/12]).
+
+:- module(html_parser, [parse_sample/12, parse_sample/0, parse_report/12]).
 
 
 :- use_module(library(sgml)).

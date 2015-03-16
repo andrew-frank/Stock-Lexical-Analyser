@@ -21,6 +21,8 @@ Podstawa prawna (uwaga, będzie potrzebne do selekcji wiadomości dla Was
 do parsowania tekstu komunikatu).
 Treść raportu.
 
+/* DONE */
+
 3. Prepare predicate for selecting ONLY messages with
 Podstawa_prawna="Art. 160 ust 4 Ustawy o obrocie - informacja o
 transakcjach osób mających dostęp do informacji poufnych".
