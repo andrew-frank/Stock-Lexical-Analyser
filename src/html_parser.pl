@@ -12,7 +12,7 @@
 % tresc raportu
 
 
-:- module(html_parser, [parse_sample/12, parse_sample/0, parse_report/12]).
+:- module(html_parser, [parse_sample/0, parse_report/12]).
 
 
 :- use_module(library(sgml)).
@@ -25,7 +25,8 @@
 
 %parse_sample
 parse_sample :-
-	parse_sample('sample-page.html', Symbol, FullName, ShortName, Sector, Nip, Regon, Date, ReportNumber, Title, LegalBasis, Content),
+	parse_report('sample-2.html', Symbol, FullName, ShortName, Sector, Nip, Regon, Date, ReportNumber, Title, LegalBasis, Content),
+
 	writeln(''), writeln('** Results: **'),
 	write('Symbol type (eng/non-eng): '), writeln(Symbol),
 	write('Full name: '), writeln(FullName),
@@ -37,12 +38,7 @@ parse_sample :-
 	write('Report number: '), writeln(ReportNumber),
 	write('Title: '), writeln(Title),
 	write('Legal basis: '), writeln(LegalBasis),
-	write('Content'), writeln(Content).
-
-parse_sample(Html, Symbol, FullName, ShortName, Sector, Nip, Regon, Date, ReportNumber, Title, LegalBasis, Content) :-
-	parse_report(Html, Symbol, FullName, ShortName, Sector, Nip, Regon, Date, ReportNumber, Title, LegalBasis, Content).
-
-
+	write('Content: '), writeln(Content).
 
 % parse_report(-Html, +,+,+...)
 parse_report(Html, Symbol, FullName, ShortName, Sector, Nip, Regon, Date, ReportNumber, Title, LegalBasis, Content) :-
@@ -51,6 +47,7 @@ parse_report(Html, Symbol, FullName, ShortName, Sector, Nip, Regon, Date, Report
 	load_html(Html, DOM, []),
 
 	find_summary_data_table(DOM, SummaryTable),
+
 	symbol_report(SummaryTable, Symbol),
 	full_issuer_name(SummaryTable, FullName),
 	short_name(SummaryTable, ShortName),
@@ -62,11 +59,15 @@ parse_report(Html, Symbol, FullName, ShortName, Sector, Nip, Regon, Date, Report
 	full_issuer_name(SummaryTable, FullName),
 
 	find_report_table(DOM, MessageTableBody),
+
 	legal_basis(MessageTableBody, LegalBasis),
 	content(MessageTableBody, Content),
+	date(MessageTableBody, Date).
 
-	find_represent_table(DOM, RepresentTable),
-	date(RepresentTable, Date).
+	% structure varied in different docs, so using date from
+        % the report content table
+	% find_represent_table(DOM, RepresentTable).
+	% date_from_representative_table(RepresentTable, Date).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -80,8 +81,14 @@ parse_report(Html, Symbol, FullName, ShortName, Sector, Nip, Regon, Date, Report
 data_at_index_path(TBody, Row, Cell, Data) :-
 	xpath(TBody, //tr(Row), Tr2),
 	xpath(Tr2, //td(Cell), Temp),
-	Temp = element(td, _ , Data).
+	Temp = element(td, _ , DataList),
+	extract_data_from_list(DataList, Data).
 
+% if the list is empty, i.e. there was no data inside a cell, whole
+% parsing fails, hence unify Data to empty string, if it is the case.
+extract_data_from_list(DataList, Data) :-
+       %( if(  data exists  ) -> ...  else  unify    ).
+	( DataList = [Data|_] -> true   ;   Data=''  ).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%	Report
@@ -105,21 +112,25 @@ legal_basis(TableBody, Data) :-
 	data_at_index_path(TableBody, 9, 2, Data).
 
 
+date(TableBody, Date) :-
+	data_at_index_path(TableBody, 3,3, Date).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%	Summary data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+%%  depracated, the structure of this table varied
+%%
 % find_message_table(-DOM, +Table)
 % finds table body with info about PERSONS REPRESENTING THE COMPANY
-find_represent_table(DOM, TableDataBody) :-
-	xpath(DOM, //div((@class=dane)), Div),
-	xpath(Div, //table(5), Table1),
-	xpath(Table1, //tbody, TBody1),
-	xpath(TBody1, //tr(1), Tr1),
-	xpath(Tr1, //td(1), Td1),
-	xpath(Td1, //table(1), Table2),
-	xpath(Table2, //tbody , TableDataBody).
+% find_represent_table(DOM, TableDataBody) :-
+%	xpath(DOM, //div((@class=dane)), Div),
+%	xpath(Div, //table(5), Table1),
+%	xpath(Table1, //tbody, TBody1),
+%	xpath(TBody1, //tr(1), Tr1),
+%	xpath(Tr1, //td(1), Td1),
+%	xpath(Td1, //table(1), Table2),
+%	xpath(Table2, //tbody , TableDataBody).
 
 
 % find_summary_data_table(-DOM, +SummaryTable)
@@ -132,8 +143,10 @@ find_summary_data_table(DOM, SummaryTable) :-
 %% summary_data_predicates(-Table, +Data)
 %%
 
-date(RepresentTable, Date) :-
-	data_at_index_path(RepresentTable, 4, 2, Date).
+% depracated, use date from ReportTable.
+% in different docs it had different structure
+% date_from_representative_table(RepresentTable, Date) :-
+%	data_at_index_path(RepresentTable, 4, 2, Date).
 
 full_issuer_name(SummaryTable, Name) :-
 	data_at_index_path(SummaryTable, 4, 2, Name).
