@@ -108,17 +108,11 @@ find_report_table(DOM, TableDataBody) :-
 	xpath(Table2, //tbody , TableDataBody).
 
 content(TableBody, Data) :-
-	xpath(TableBody, //tr(12), Tr2),
-	xpath(Tr2, //td(2), Temp),
-	%writeln(Temp),
-	Data = Temp.
-	%Temp = element(td, _ , Data).
-	%extract_data_from_list(DataList, Data),
-	%writeln(Data).
-	%data_at_index_path(TableBody, 12, 2, Data).
+	data_at_index_path(TableBody, 12, 2, Data).
 
 legal_basis(TableBody, Data) :-
 	data_at_index_path(TableBody, 9, 2, Data).
+
 
 date(TableBody, Date) :-
 	data_at_index_path(TableBody, 3,3, Date).
