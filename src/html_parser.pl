@@ -13,7 +13,7 @@
 % tresc raportu
 
 
-:- module(html_parser, [parse_sample/0, parse_report/12]).
+:- module(html_parser, [parse_sample/0, parse_report/12, parse_contents/7]).
 
 
 :- use_module(library(sgml)).
@@ -39,7 +39,26 @@ parse_sample :-
 	write('Report number: '), writeln(ReportNumber),
 	write('Title: '), writeln(Title),
 	write('Legal basis: '), writeln(LegalBasis),
-	write('Content: '), writeln(Content).
+	write('Content: '), writeln(Content),
+	parse_contents(LegalBasis, IsLegalBasisSuitable, Content, InitialLyrics, IsPacketTransaction, Shares, Price),
+	(
+	    IsLegalBasisSuitable =:= 1 ->
+	    writeln('Legal basis matching the filter'),
+	    write('Initial lyrics: '), writeln(InitialLyrics),
+	    (
+	        IsPacketTransaction =:= 1 ->
+		writeln('The transaction consisted of multiple packets')
+		;
+	        writeln('The transaction consisted of a single packet')
+	     ),
+	    write('Total number of shares exchanged during the transaction'), writeln(Shares),
+	    write('Total price of shares exchanged during the transaction'), writeln(Price)
+	    ;
+	    writeln('Legal basis not matching the filter')
+	).
+
+parse_contents(LegalBasis, IsLegalFlag_OUT, TextToParse, InitialLyrics_OUT, IsAPacket_OUT, Shares_OUT, Price_OUT) :-
+	writeln('I am a walrus').
 
 % parse_report(-Html, +,+,+...)
 parse_report(Html, Symbol, FullName, ShortName, Sector, Nip, Regon, Date, ReportNumber, Title, LegalBasis, Content) :-
