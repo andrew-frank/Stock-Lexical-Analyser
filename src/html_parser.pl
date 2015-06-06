@@ -58,7 +58,23 @@ parse_sample :-
 	).
 
 parse_contents(LegalBasis, IsLegalFlag_OUT, TextToParse, InitialLyrics_OUT, IsAPacket_OUT, Shares_OUT, Price_OUT) :-
-	writeln('I am a walrus').
+	(
+	    a_substring(LegalBasis,'Art. 160 ust 4 Ustawy o obrocie') ->
+	    IsLegalFlag_OUT = 1
+	    ;
+    write('Legal basis: '),writeln(LegalBasis),
+	    IsLegalFlag_OUT = 0
+	).
+
+% a substring DCG
+substr(String) --> ([_|_];[]), String,  ([_|_];[]).
+% a wrapper for a substring DCG
+substring(X,Y) :- phrase(substr(X),Y).
+
+% a substring function for atoms
+a_substring(X,Y) :-
+	sub_atom(X,_,_,_,Y).
+
 
 % parse_report(-Html, +,+,+...)
 parse_report(Html, Symbol, FullName, ShortName, Sector, Nip, Regon, Date, ReportNumber, Title, LegalBasis, Content) :-
