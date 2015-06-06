@@ -110,9 +110,9 @@ find_report_table(DOM, TableDataBody) :-
 content(TableBody, Data) :-
 	xpath(TableBody, //tr(12), Tr2),
 	xpath(Tr2, //td(2), Temp),
+	Temp = element(td, _ , Data).
 	%writeln(Temp),
-	Data = Temp.
-	%Temp = element(td, _ , Data).
+	%Data = [Temp|_].
 	%extract_data_from_list(DataList, Data),
 	%writeln(Data).
 	%data_at_index_path(TableBody, 12, 2, Data).
